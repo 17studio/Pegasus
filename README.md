@@ -1,6 +1,6 @@
 # Pegasus
-A trade platform, fast, safe, extensible, friendly
 
+A trade platform, fast, safe, extensible, friendly
 
 ### History
 

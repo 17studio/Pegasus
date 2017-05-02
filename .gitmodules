@@ -1,0 +1,9 @@
+[submodule "deps/talib"]
+	path = deps/talib
+	url = https://github.com/TA-Lib/ta-lib.git
+[submodule "deps/numpy"]
+	path = deps/numpy
+	url = https://github.com/numpy/numpy
+[submodule "deps/hdf5"]
+	path = deps/hdf5
+	url = https://github.com/live-clones/hdf5.git
