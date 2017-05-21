@@ -12,18 +12,22 @@
 # 3. use numpy.get_include() to get the path
 # 4. locate python include & lib path
 PYTHON_INCLUDE_DIRS ?= /usr/include/python2.7
+PYTHON_LIB_PATH    	?= /usr/lib/python2.7/config-x86_64-linux-gnu
 PYTHON_LIBRARIES    ?= /usr/lib/python2.7/config-x86_64-linux-gnu/libpython2.7.so
 NUMPY_INCLUDE_DIRS  ?= /usr/local/lib/python2.7/dist-packages/numpy/core/include
 
 NPWRAPPER_SRCS_DIRS	?= .
 
 all:
-	@ponyc $(NPWRAPPER_SRCS_DIRS)
+	@clang ndarray.c -I$(PYTHON_INCLUDE_DIRS) -I$(NUMPY_INCLUDE_DIRS) -lpython2.7 -fPIC -c -o libndarray.o
+	@ar r libndarray.a libndarray.o
+	@ponyc -p ${PYTHON_LIB_PATH}:$(NPWRAPPER_SRCS_DIRS) $(NPWRAPPER_SRCS_DIRS)
 
 test: all
 	$(NPWRAPPER_SRCS_DIRS)/npwrapper
 
 clean:
+	@rm libndarray.*
 	@rm npwrapper
 
 .PHONY: all test clean

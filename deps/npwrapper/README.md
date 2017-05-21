@@ -4,6 +4,7 @@ wrapper for numpy c api
 
 https://github.com/ndarray/Boost.NumPy
 http://ndarray.github.io/ndarray/
+https://docs.scipy.org/doc/numpy/reference/c-api.array.html
 
 ### dtype
 
