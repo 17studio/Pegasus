@@ -5,11 +5,13 @@ use "ponytest"
 
 use @Py_Initialize[None]()
 use @Py_Finalize[None]()
-use @_PyArray_SimpleNew[Pointer[_PyObject]](nd: I32, dims: I32, typenum: I32)
+use @_PyArray_import_array[None]()
+use @_PyArray_SimpleNew[Pointer[_PyObject]](nd: I32, dims: Pointer[DynamicArray], typenum: I32)
 
 actor Main is TestList
   new create(env: Env) =>
     @Py_Initialize()
+    @_PyArray_import_array()
     PonyTest(env, this)
 
   new make() =>
@@ -98,8 +100,10 @@ type _EscapeState is
   | _EscapeMod
   )
 
-typedef npy_intp to the appropriate pointer size for different platform
-typedef Py_intptr_t npy_intp;
+This is to typedef npy_intp to the appropriate pointer size for different platform
+
+typedef int Py_intptr_t; <pyport.h>
+typedef Py_intptr_t npy_intp; <npy_common.h>
 
 npy_intp *dims, A pointer to the size in each dimension.
 PyArray_SimpleNew() whose size in each of nd dimensions is given by the integer array, dims.
@@ -109,35 +113,35 @@ primitive _PyObject
 primitive _PyArrayObject
 primitive _NpyIntp
 
-primitive _NpyBOOL       fun apply(): U32 => 0
-primitive _NpyBYTE       fun apply(): U32 => 1
-primitive _NpyUBYTE      fun apply(): U32 => 2
-primitive _NpySHORT      fun apply(): U32 => 3
-primitive _NpyUSHORT     fun apply(): U32 => 4
-primitive _NpyINT        fun apply(): U32 => 5
-primitive _NpyUINT       fun apply(): U32 => 6
-primitive _NpyLONG       fun apply(): U32 => 7
-primitive _NpyULONG      fun apply(): U32 => 8
-primitive _NpyLONGLONG   fun apply(): U32 => 9
-primitive _NpyULONGLONG  fun apply(): U32 => 10
-primitive _NpyFLOAT      fun apply(): U32 => 11
-primitive _NpyDOUBLE     fun apply(): U32 => 12
-primitive _NpyLONGDOUBLE fun apply(): U32 => 13
-primitive _NpyCFLOAT     fun apply(): U32 => 14
-primitive _NpyCDOUBLE    fun apply(): U32 => 15
-primitive _NpyCLONGDOUBLE fun apply(): U32 => 16
-primitive _NpyOBJECT     fun apply(): U32 => 17
-primitive _NpySTRING     fun apply(): U32 => 18
-primitive _NpyUNICODE    fun apply(): U32 => 19
-primitive _NpyVOID       fun apply(): U32 => 20
-primitive _NpyDATETIME   fun apply(): U32 => 21
-primitive _NpyTIMEDELTA  fun apply(): U32 => 22
-primitive _NpyHALF       fun apply(): U32 => 23
-primitive _NpyNTYPES     fun apply(): U32 => 24
-primitive _NpyNOTYPE     fun apply(): U32 => 25
-primitive _NpyCHAR       fun apply(): U32 => 26
-primitive _NpyUSERDEF    fun apply(): U32 => 256
-primitive _NpyNTypesAbiCompatible fun apply(): U32 => 21
+primitive _NpyBOOL       fun apply(): I32 => 0
+primitive _NpyBYTE       fun apply(): I32 => 1
+primitive _NpyUBYTE      fun apply(): I32 => 2
+primitive _NpySHORT      fun apply(): I32 => 3
+primitive _NpyUSHORT     fun apply(): I32 => 4
+primitive _NpyINT        fun apply(): I32 => 5
+primitive _NpyUINT       fun apply(): I32 => 6
+primitive _NpyLONG       fun apply(): I32 => 7
+primitive _NpyULONG      fun apply(): I32 => 8
+primitive _NpyLONGLONG   fun apply(): I32 => 9
+primitive _NpyULONGLONG  fun apply(): I32 => 10
+primitive _NpyFLOAT      fun apply(): I32 => 11
+primitive _NpyDOUBLE     fun apply(): I32 => 12
+primitive _NpyLONGDOUBLE fun apply(): I32 => 13
+primitive _NpyCFLOAT     fun apply(): I32 => 14
+primitive _NpyCDOUBLE    fun apply(): I32 => 15
+primitive _NpyCLONGDOUBLE fun apply(): I32 => 16
+primitive _NpyOBJECT     fun apply(): I32 => 17
+primitive _NpySTRING     fun apply(): I32 => 18
+primitive _NpyUNICODE    fun apply(): I32 => 19
+primitive _NpyVOID       fun apply(): I32 => 20
+primitive _NpyDATETIME   fun apply(): I32 => 21
+primitive _NpyTIMEDELTA  fun apply(): I32 => 22
+primitive _NpyHALF       fun apply(): I32 => 23
+primitive _NpyNTYPES     fun apply(): I32 => 24
+primitive _NpyNOTYPE     fun apply(): I32 => 25
+primitive _NpyCHAR       fun apply(): I32 => 26
+primitive _NpyUSERDEF    fun apply(): I32 => 256
+primitive _NpyNTypesAbiCompatible fun apply(): I32 => 21
 
 type _NpyTYPES is
   ( _NpyBOOL
@@ -171,8 +175,12 @@ type _NpyTYPES is
   | _NpyNTypesAbiCompatible
   )
 
+type DynamicArray is (I32, I32, I32)
+
+// http://stackoverflow.com/questions/29213539/exception-keyerror-keyerror139697538152192-on-using-threading-module-with-at
 class _TestPyArrayObject is UnitTest
   fun name(): String => "pyarrobject"
 
   fun apply(h: TestHelper) =>
-    @_PyArray_SimpleNew(0, 0, 0)
+    var arr: DynamicArray = (0, 0, 0)
+    @_PyArray_SimpleNew(2, addressof len, _NpyINT())
