@@ -4,7 +4,7 @@
 
 static int _init = 0;
 
-void _PyArray_import_array()
+void _Numpy_import_array()
 {
     if (!_init)
     {

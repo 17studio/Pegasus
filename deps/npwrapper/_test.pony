@@ -5,13 +5,13 @@ use "ponytest"
 
 use @Py_Initialize[None]()
 use @Py_Finalize[None]()
-use @_PyArray_import_array[None]()
+use @_Numpy_import_array[None]()
 use @_PyArray_SimpleNew[Pointer[_PyObject]](nd: I32, dims: Pointer[DynamicArray], typenum: I32)
 
 actor Main is TestList
   new create(env: Env) =>
     @Py_Initialize()
-    @_PyArray_import_array()
+    @_Numpy_import_array()
     PonyTest(env, this)
 
   new make() =>
@@ -183,4 +183,4 @@ class _TestPyArrayObject is UnitTest
 
   fun apply(h: TestHelper) =>
     var arr: DynamicArray = (0, 0, 0)
-    @_PyArray_SimpleNew(2, addressof len, _NpyINT())
+    @_PyArray_SimpleNew(3, addressof arr, _NpyINT())
