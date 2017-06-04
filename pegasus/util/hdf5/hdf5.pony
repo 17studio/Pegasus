@@ -33,9 +33,13 @@ class Hdf5file
     path = from
     _hid = @_H5Fcreate(from.path.cstring(), flags(), H5PDefault(), H5PDefault())
 
+  new create2(from: FilePath, flags: FileFlag = H5FAccTRUNC) =>
+    path = from
+    _hid = @H5Fcreate(from.path.cstring(), flags(), H5PDefault(), H5PDefault())
+
   new open(from: FilePath, flags: FileFlag = H5FAccRDWR) =>
     path = from
-    _hid = @_H5Fopen(from.path.cstring(), flags(), H5PDefault())
+    _hid = @H5Fopen(from.path.cstring(), flags(), H5PDefault())
 
   fun _final() =>
     if _hid > 0 then
