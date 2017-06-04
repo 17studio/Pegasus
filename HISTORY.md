@@ -1,5 +1,8 @@
 ### History
 
+* 2017.5.22
+    - data history module started
+
 * 2017.5.15
     - start porting numpy ndarray in pony
 
