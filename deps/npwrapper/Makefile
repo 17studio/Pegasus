@@ -19,7 +19,7 @@ NUMPY_INCLUDE_DIRS  ?= /usr/local/lib/python2.7/dist-packages/numpy/core/include
 NPWRAPPER_SRCS_DIRS	?= .
 
 all:
-	@clang ndarray.c -I$(PYTHON_INCLUDE_DIRS) -I$(NUMPY_INCLUDE_DIRS) -lpython2.7 -fPIC -c -o libndarray.o
+	@clang ndarray.c -I$(PYTHON_INCLUDE_DIRS) -I$(NUMPY_INCLUDE_DIRS) -fPIC -c -o libndarray.o
 	@ar r libndarray.a libndarray.o
 	@ponyc -p ${PYTHON_LIB_PATH}:$(NPWRAPPER_SRCS_DIRS) $(NPWRAPPER_SRCS_DIRS)
 

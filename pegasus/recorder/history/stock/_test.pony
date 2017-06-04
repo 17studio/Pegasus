@@ -35,4 +35,4 @@ class _TestHdf5file is UnitTest
   fun apply(h: TestHelper) ? =>
     var path: FilePath = FilePath(h.env.root as AmbientAuth, "/var/tmp/tmphdf5")
     h.env.out.print(path.path)
-    var hdf5: Hdf5file = Hdf5file.create(path)
+    var hdf5: Hdf5file = Hdf5file.open(path)

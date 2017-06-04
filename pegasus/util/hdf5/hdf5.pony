@@ -1,9 +1,12 @@
 
 use "lib:hdf5-static"
+use "lib:hdf5"
 use "files"
 
 use @H5Fcreate[HidType](str: Pointer[U8] tag, flags: U32, fcpl_id: I64, fapl_id: I64)
+use @_H5Fcreate[HidType](str: Pointer[U8] tag, flags: U32, fcpl_id: I64, fapl_id: I64)
 use @H5Fopen[HidType](str: Pointer[U8] tag, flags: U32, fapl_id: I64)
+use @_H5Fopen[HidType](str: Pointer[U8] tag, flags: U32, fapl_id: I64)
 use @H5Fflush[HerrType](object_id: HidType, scope: I32)
 use @H5Fclose[HerrType](file_id: HidType)
 
@@ -24,15 +27,15 @@ primitive H5FScopeGlobal    fun apply(): I32 => 1
 
 class Hdf5file
   let path: FilePath
-  var _hid: HidType
+  var _hid: HidType = 0
 
   new create(from: FilePath, flags: FileFlag = H5FAccTRUNC) =>
     path = from
-    _hid = @H5Fcreate(from.path.cstring(), flags(), H5PDefault(), H5PDefault())
+    _hid = @_H5Fcreate(from.path.cstring(), flags(), H5PDefault(), H5PDefault())
 
   new open(from: FilePath, flags: FileFlag = H5FAccRDWR) =>
     path = from
-    _hid = @H5Fopen(from.path.cstring(), flags(), H5PDefault())
+    _hid = @_H5Fopen(from.path.cstring(), flags(), H5PDefault())
 
   fun _final() =>
     if _hid > 0 then
