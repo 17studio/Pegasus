@@ -9,34 +9,20 @@
  * 获得char**的方法，Array[Pointer[U8]].cpointer()，先生成String，然后
  * 再由Array[String]，转换到char**
  */
-use @H5TBmake_table[HerrType](
-  table_title: Pointer[U8] tag, // title, optional
-  loc_id: HidType, // file id belongs to
-  dset_name: Pointer[U8] tag, // table name
-  nfields: U64, // the number of fields
-  nrecords: U64 tag, // The number of records
-  type_size: U32, // size_t, win64 should be U64, The size in bytes of the structure associated with the table. This value is obtained with sizeof.
-  const char *field_names [ ], // An array containing the names of the fields.
-  const size_t *field_offset, // An array containing the offsets of the fields.
-  const hid_t *field_types, // An array containing the type of the fields.
-  hsize_t chunk_size, // The chunk size.
-  void *fill_data, // Fill values data. Think as default values.
-  int compress, // Flag that turns compression on or off.
-  const void *data // Buffer with data to be written to the table.
-  )
 
 class Hdf5table
   let name: String
-  let hid: HidType
+  let hid: HidType // file belongs to
   let _self: HidType
 
   new create(hid': HidType, name': String) =>
     name = name'
     hid = hid'
+    _self = 0
 
   fun _final() =>
-    if _hid > 0 then
+    if _self > 0 then
       // do something
-      @H5Fflush(_hid, H5FSCopeLocal())
-      @H5Fclose(_hid)
+      @H5Fflush(_self, H5FSCopeLocal())
+      @H5Fclose(_self)
     end

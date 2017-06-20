@@ -1,2 +1,2 @@
 - change ndarray to https://github.com/dmlc/minerva
-- add cpu/gpu parallel computing?
+- add parallel gpu for faster computing ?
