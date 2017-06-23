@@ -4,9 +4,9 @@ use "lib:hdf5"
 use "files"
 
 use @H5Fcreate[HidType](str: Pointer[U8] tag, flags: U32, fcpl_id: I64, fapl_id: I64)
-use @_H5Fcreate[HidType](str: Pointer[U8] tag, flags: U32, fcpl_id: I64, fapl_id: I64)
+use @_h5f_create[HidType](str: Pointer[U8] tag, flags: U32, fcpl_id: I64, fapl_id: I64)
 use @H5Fopen[HidType](str: Pointer[U8] tag, flags: U32, fapl_id: I64)
-use @_H5Fopen[HidType](str: Pointer[U8] tag, flags: U32, fapl_id: I64)
+use @_h5f_open[HidType](str: Pointer[U8] tag, flags: U32, fapl_id: I64)
 use @H5Fflush[HerrType](object_id: HidType, scope: I32)
 use @H5Fclose[HerrType](file_id: HidType)
 
@@ -16,7 +16,7 @@ class Hdf5file
 
   new create(from: FilePath, flags: H5FFileFlag = H5FAccTRUNC) =>
     path = from
-    _hid = @_H5Fcreate(from.path.cstring(), flags(), H5PDefault(), H5PDefault())
+    _hid = @_h5f_create(from.path.cstring(), flags(), H5PDefault(), H5PDefault())
 
   new create2(from: FilePath, flags: H5FFileFlag = H5FAccTRUNC) =>
     path = from
