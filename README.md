@@ -15,6 +15,6 @@ see https://github.com/17studio/Pegasus/wiki
 
 Linux x64, test on vagrant ubuntu 14.04 x86_x64
 
-- hdf5 build failed on vagrant linux, clang can not recognise window folder file format, change to gnu c/c++
+- hdf5 build failed on vagrant linux with clang, clang can not recognise window folder file format, change to gnu c/c++
 - if use vagrant window folder, hdf5 need root priority to create symbol link
-- numpy need to be installed, a wrapper library for numpy is created
+- numpy need to be installed, a wrapper library for numpy is created for calling

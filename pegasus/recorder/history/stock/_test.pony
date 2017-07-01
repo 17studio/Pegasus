@@ -22,6 +22,11 @@ actor Main is TestList
   fun tag tests(test: PonyTest) =>
     test(_TestSinaCrawler)
     test(_TestHdf5file)
+    test(_TestConfigFile)
+
+class _TestConfigFile is UnitTest
+  fun name(): String => "StockConfigFile"
+  fun apply(h: TestHelper) => None
 
 class _TestSinaCrawler is UnitTest
   fun name(): String => "SinaCrawler"
