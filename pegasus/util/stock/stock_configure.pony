@@ -3,6 +3,7 @@ use "collections"
 use "json"
 use "files"
 use "net/http"
+use "debug"
 
 class CodeRequestHandler is HTTPHandler
   /*
@@ -11,13 +12,18 @@ class CodeRequestHandler is HTTPHandler
    */
   let _fn: {(FilePath)} val
   let _file_path: FilePath val
+  let _session: HTTPSession
 
-  new create(fn :{(FilePath)} val, path: FilePath) =>
+  new create(fn :{(FilePath)} val, path: FilePath, session: HTTPSession) =>
     _fn = fn
     _file_path = path
+    _session = session
 
-  fun chunk(data': ByteSeq val) =>
+  fun ref chunk(data': ByteSeq val) =>
     _fn(_file_path)
+
+  fun finished() =>
+    _session.dispose()
 
 class CodeRequestHandlerFactory is HandlerFactory
   let _fn: {(FilePath)} val
@@ -27,8 +33,8 @@ class CodeRequestHandlerFactory is HandlerFactory
     _fn = fn
     _file_path = path
 
-  fun apply(session: HTTPSession tag): HTTPHandler =>
-    var h = CodeRequestHandler(_fn, _file_path)
+  fun apply(session: HTTPSession): HTTPHandler =>
+    var h = CodeRequestHandler(_fn, _file_path, session)
     h
 
 class StockConfigure
@@ -56,13 +62,19 @@ class StockConfigure
     _config_path = FilePath(auth, _config_name)
     let config_file = File(_config_path)
     let size = config_file.size()
-    let content: String val = config_file.read_string(size) // should be optimized
-    _config_doc.parse(content)
+    if size > 0 then
+      try
+        let content: String val = config_file.read_string(size) // should be optimized
+        _config_doc.parse(content)
+      else
+        Debug.out("failed to jsondoc parse:" + name)
+      end
+    end
 
   fun ref crawl_codes(): Payload val ? =>
     """从网络获取股票的编码，并返回处理句柄"""
     _handler_factory = CodeRequestHandlerFactory({(path: FilePath) =>
-      // 抓取并保存抓取结果
+      // 格式化抓取结果
       // let config_file = File(_config_path)
       // if not (config_file.errno() is FileOK) then
       //   error

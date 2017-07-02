@@ -5,6 +5,8 @@
  3. 读写数据文件
  */
 use "files"
+use "time"
+use "net/http"
 use "ponytest"
 use "util/stock"
 use "util/hdf5"
@@ -26,7 +28,18 @@ actor Main is TestList
 
 class _TestConfigFile is UnitTest
   fun name(): String => "StockConfigFile"
-  fun apply(h: TestHelper) => None
+
+  fun apply(h: TestHelper) ? =>
+    try
+      let payload = Payload.request("GET", URL.valid("http://www.shdjt.com/js/lib/astock.js"))
+    else
+      h.env.out.print("URL failed")
+    end
+    let config: StockConfigure = StockConfigure(h.env.root as AmbientAuth, "/var/tmp/tmpconfig")
+    let request: Payload val = config.crawl_codes()
+    let timers = Timers
+    let timer = Timer(_TestConfigFileTimerNotify(h.env, 10, timers), 0, 1_000_000_000) // wait: 0.1 secs, interval: 1 secs
+    timers(consume timer)
 
 class _TestSinaCrawler is UnitTest
   fun name(): String => "SinaCrawler"
@@ -46,3 +59,21 @@ class _TestHdf5file is UnitTest
 
     var path2: FilePath = FilePath(h.env.root as AmbientAuth, "/var/tmp/tmphdf5_2")
     var hdf5_2: Hdf5file = Hdf5file.create2(path2)
+
+class _TestConfigFileTimerNotify is TimerNotify
+  let _env: Env
+  let _timout: U32
+  let _timers: Timers
+  var _counter: U32 = 0
+
+  new iso create(env: Env, timeout: U32, timers: Timers) =>
+    _env = env
+    _timout = timeout
+    _timers = timers
+
+  fun ref apply(timer: Timer, count: U64): Bool =>
+    if _counter >= _timout then
+      _timers.dispose()
+    end
+    _counter = _counter + 1
+    true
