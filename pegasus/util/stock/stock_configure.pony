@@ -12,7 +12,7 @@ class CodeRequestHandler is HTTPHandler
    */
   let _file_path: FilePath val // 保存该参数，方便完成文件操作
   let _session: HTTPSession
-  var _body_buffer: String ref = String// 保存读取的信息
+  var _body_buffer: String ref = String // 保存读取的信息
 
   new create(path: FilePath, session: HTTPSession) =>
     _file_path = path
