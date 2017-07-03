@@ -10,31 +10,34 @@ class CodeRequestHandler is HTTPHandler
    * 因为对网络的操作是在另外的ACTOR中执行，主调ACTOR无法干预执行的步骤，
    * 所以，主调ACTOR应该采取等待完成，并把执行方法，交由网络调度ACTOR执行（回调模式）
    */
-  let _fn: {(FilePath)} val
-  let _file_path: FilePath val
+  let _file_path: FilePath val // 保存该参数，方便完成文件操作
   let _session: HTTPSession
+  var _body_buffer: String ref = String// 保存读取的信息
 
-  new create(fn :{(FilePath)} val, path: FilePath, session: HTTPSession) =>
-    _fn = fn
+  new create(path: FilePath, session: HTTPSession) =>
     _file_path = path
     _session = session
 
   fun ref chunk(data': ByteSeq val) =>
-    _fn(_file_path)
+    _body_buffer.append(data') // 复制，性能可以优化
 
   fun finished() =>
     _session.dispose()
+    // 格式化抓取结果，并写到文件中
+    let config_file = File(_file_path)
+    if not (config_file.errno() is FileOK) then
+      return
+    end
+    config_file.write(_body_buffer)
 
 class CodeRequestHandlerFactory is HandlerFactory
-  let _fn: {(FilePath)} val
   let _file_path: FilePath val
 
-  new val create(fn: {(FilePath)} val, path: FilePath) =>
-    _fn = fn
+  new val create(path: FilePath) =>
     _file_path = path
 
   fun apply(session: HTTPSession): HTTPHandler =>
-    var h = CodeRequestHandler(_fn, _file_path, session)
+    var h = CodeRequestHandler(_file_path, session)
     h
 
 class StockConfigure
@@ -71,27 +74,13 @@ class StockConfigure
       end
     end
 
-  fun ref crawl_codes(): Payload val ? =>
-    """从网络获取股票的编码，并返回处理句柄"""
-    _handler_factory = CodeRequestHandlerFactory({(path: FilePath) =>
-      // 格式化抓取结果
-      // let config_file = File(_config_path)
-      // if not (config_file.errno() is FileOK) then
-      //   error
-      // end
-      None
-    }, _config_path)
+  fun ref crawl_codes_to_file(): Payload val ? =>
+    """从网络获取股票的编码，写到配置文件中，并返回处理句柄"""
+    _handler_factory = CodeRequestHandlerFactory(_config_path)
     let client = HTTPClient(_auth)
     let request = client(Payload.request("GET", URL.build(_code_url)), _handler_factory as CodeRequestHandlerFactory val)
     request
 
-  fun update_codes_to_file() =>
-    """从网络获取股票的编码并写到配置文件中"""
-    false
-
   fun load_codes() =>
     """从文件中读取所有的编码"""
-    None
-
-  fun _save_to_file() =>
     None
