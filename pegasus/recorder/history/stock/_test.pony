@@ -7,6 +7,7 @@
 use "files"
 use "time"
 use "net/http"
+use "json"
 use "ponytest"
 use "util/stock"
 use "util/hdf5"
@@ -36,10 +37,13 @@ class _TestConfigFile is UnitTest
       h.env.out.print("URL failed")
     end
     let config: StockConfigure = StockConfigure(h.env.root as AmbientAuth, "/var/tmp/tmpconfig")
-    let request: Payload val = config.crawl_codes_to_file()
+    //let request: Payload val = config.crawl_codes_to_file()
+    let json: JsonDoc = config.load_codes()
+    /*
     let timers = Timers
     let timer = Timer(_TestConfigFileTimerNotify(h.env, 10, timers), 0, 1_000_000_000) // wait: 0.1 secs, interval: 1 secs
     timers(consume timer)
+    */
 
 class _TestSinaCrawler is UnitTest
   fun name(): String => "SinaCrawler"

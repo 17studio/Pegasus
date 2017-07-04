@@ -4,6 +4,7 @@ use "json"
 use "files"
 use "net/http"
 use "debug"
+use "regex"
 
 class CodeRequestHandler is HTTPHandler
   /*
@@ -63,16 +64,6 @@ class StockConfigure
     _auth = auth
     _config_name = name
     _config_path = FilePath(auth, _config_name)
-    let config_file = File(_config_path)
-    let size = config_file.size()
-    if size > 0 then
-      try
-        let content: String val = config_file.read_string(size) // should be optimized
-        _config_doc.parse(content)
-      else
-        Debug.out("failed to jsondoc parse:" + name)
-      end
-    end
 
   fun ref crawl_codes_to_file(): Payload val ? =>
     """从网络获取股票的编码，写到配置文件中，并返回处理句柄"""
@@ -81,6 +72,25 @@ class StockConfigure
     let request = client(Payload.request("GET", URL.build(_code_url)), _handler_factory as CodeRequestHandlerFactory val)
     request
 
-  fun load_codes() =>
+  fun load_codes(): JsonDoc ? =>
     """从文件中读取所有的编码"""
-    None
+    let json_doc = JsonDoc
+    let config_file = File(_config_path)
+    if not (config_file.errno() is FileOK) then
+      error
+    end
+    let size = config_file.size()
+    if size > 0 then
+      try
+        let content: String val = config_file.read_string(size) // should be optimized
+        let r = Regex("~(\\d+)`")
+        let matched = r(content)
+        Debug.out("file size:" + size.string() + ",all==>" + matched.size().string())
+      else
+        Debug.out("failed to jsondoc parse:" + _config_name)
+      end
+    end
+
+    json_doc
+
+
