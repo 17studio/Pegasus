@@ -8,6 +8,7 @@ use "files"
 use "time"
 use "net/http"
 use "json"
+use "debug"
 use "ponytest"
 use "util/stock"
 use "util/hdf5"
@@ -34,15 +35,16 @@ class _TestConfigFile is UnitTest
     try
       let payload = Payload.request("GET", URL.valid("http://www.shdjt.com/js/lib/astock.js"))
     else
-      h.env.out.print("URL failed")
+      Debug.out("URL failed")
     end
     let config: StockConfigure = StockConfigure(h.env.root as AmbientAuth, "/var/tmp/tmpconfig")
-    //let request: Payload val = config.crawl_codes_to_file()
     let json: JsonDoc = config.load_codes()
     /*
+    let request: Payload val = config.crawl_codes_to_file()
     let timers = Timers
-    let timer = Timer(_TestConfigFileTimerNotify(h.env, 10, timers), 0, 1_000_000_000) // wait: 0.1 secs, interval: 1 secs
+    let timer = Timer(_TestConfigFileTimerNotify(h.env, 5, timers), 0, 1_000_000_000) // wait: 0.1 secs, interval: 1 secs
     timers(consume timer)
+    Debug.out(request.headers().size())
     */
 
 class _TestSinaCrawler is UnitTest
@@ -57,7 +59,7 @@ class _TestHdf5file is UnitTest
   fun apply(h: TestHelper) ? =>
     var path: FilePath = FilePath(h.env.root as AmbientAuth, "/var/tmp/tmphdf5")
     let v = "create & open: ".add(path.path).add("!!")
-    h.env.out.print(v)
+    Debug.out(v)
     var hdf5: Hdf5file = Hdf5file.create(path)
     var hdf5_1: Hdf5file = Hdf5file.open(path)
 

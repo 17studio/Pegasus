@@ -82,12 +82,23 @@ class StockConfigure
     let size = config_file.size()
     if size > 0 then
       try
-        let content: String val = config_file.read_string(size) // should be optimized
-        let r = Regex("~(\\d+)`")
-        let matched = r(content)
-        Debug.out("file size:" + size.string() + ",all==>" + matched.size().string())
+        let content: String val = config_file.read_string(size) // 文件以UTF8方式编码
+        let r = Regex("~(\\d+)`") // Regex默认支持UTF8编码 http://pcre.org/current/doc/html/pcre2unicode.html
+
+        var pos: USize = 0
+        while pos < size do
+          let matched = r(content, pos)
+          pos = matched.end_pos()
+          Debug.out("pos==>" + pos.string())
+
+          var i: U32 = 0
+          while i < matched.size() do
+            Debug.out(matched(i))
+            i = i + 1
+          end
+        end
       else
-        Debug.out("failed to jsondoc parse:" + _config_name)
+        Debug.out("all matched done:" + _config_name)
       end
     end
 
