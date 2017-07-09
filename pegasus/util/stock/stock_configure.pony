@@ -20,7 +20,7 @@ class CodeRequestHandler is HTTPHandler
     _session = session
 
   fun ref chunk(data': ByteSeq val) =>
-    _body_buffer.append(data') // 复制，性能可以优化
+    _body_buffer.append(data') // 复制，性能可以优化吗？
 
   fun finished() =>
     _session.dispose()
@@ -31,6 +31,7 @@ class CodeRequestHandler is HTTPHandler
     end
     config_file.write(_body_buffer)
 
+
 class CodeRequestHandlerFactory is HandlerFactory
   let _file_path: FilePath val
 
@@ -40,6 +41,7 @@ class CodeRequestHandlerFactory is HandlerFactory
   fun apply(session: HTTPSession): HTTPHandler =>
     var h = CodeRequestHandler(_file_path, session)
     h
+
 
 class StockConfigure
   """
@@ -58,29 +60,30 @@ class StockConfigure
   let _config_name: String // 设置默认的股票信息文件的保存路径
   let _config_path: FilePath
   var _config_doc: JsonDoc = JsonDoc.create() // 从文件中读取出来的Json文档
-  var _handler_factory: (CodeRequestHandlerFactory val | None) = None // 用于保存处理远程请求的句柄工厂，方便查询运行情况
 
   new create(auth: AmbientAuth, name: String) ? =>
     _auth = auth
     _config_name = name
     _config_path = FilePath(auth, _config_name)
 
-  fun ref crawl_codes_to_file(): Payload val ? =>
+  fun ref crawl_codes_to_file(name: String): Payload val ? =>
     """从网络获取股票的编码，写到配置文件中，并返回处理句柄"""
-    _handler_factory = CodeRequestHandlerFactory(_config_path)
+    var config_path = FilePath(_auth, name)
+    var handler_factory: (CodeRequestHandlerFactory val | None) = None // 用于保存处理远程请求的句柄工厂，方便查询运行情况
+    handler_factory = CodeRequestHandlerFactory(config_path)
     let client = HTTPClient(_auth)
-    let request = client(Payload.request("GET", URL.build(_code_url)), _handler_factory as CodeRequestHandlerFactory val)
+    let request = client(Payload.request("GET", URL.build(_code_url)), handler_factory as CodeRequestHandlerFactory val)
     request
 
   fun load_codes(): JsonDoc ? =>
     """从文件中读取所有的编码"""
-    let json_doc = JsonDoc
     let config_file = File(_config_path)
     if not (config_file.errno() is FileOK) then
       error
     end
     let size = config_file.size()
     if size > 0 then
+      var json_array: JsonArray = JsonArray
       try
         let content: String val = config_file.read_string(size) // 文件以UTF8方式编码
         let r = Regex("~(\\d+)`") // Regex默认支持UTF8编码 http://pcre.org/current/doc/html/pcre2unicode.html
@@ -89,19 +92,17 @@ class StockConfigure
         while pos < size do
           let matched = r(content, pos)
           pos = matched.end_pos()
-          Debug.out("pos==>" + pos.string())
-
-          var i: U32 = 0
-          while i < matched.size() do
-            Debug.out(matched(i))
-            i = i + 1
-          end
+          json_array.data.push(matched(1))
         end
       else
-        Debug.out("all matched done:" + _config_name)
+        var json_doc = JsonDoc
+        //https://tutorial.ponylang.org/expressions/variables.html => Otherwise, the field is public and can be read or written from anywhere
+        //json_doc.data = json_array // can not write to public field directly if which is a class, forbidden by compiler
+        json_doc.parse(json_array.string())
+        return json_doc
       end
     end
 
-    json_doc
+    JsonDoc
 
 

@@ -38,14 +38,12 @@ class _TestConfigFile is UnitTest
       Debug.out("URL failed")
     end
     let config: StockConfigure = StockConfigure(h.env.root as AmbientAuth, "/var/tmp/tmpconfig")
-    let json: JsonDoc = config.load_codes()
-    /*
-    let request: Payload val = config.crawl_codes_to_file()
+    let json_doc: JsonDoc = config.load_codes()
+    Debug.out(json_doc.string())
+    let request: Payload val = config.crawl_codes_to_file("/var/tmp/tmpconfig")
     let timers = Timers
     let timer = Timer(_TestConfigFileTimerNotify(h.env, 5, timers), 0, 1_000_000_000) // wait: 0.1 secs, interval: 1 secs
     timers(consume timer)
-    Debug.out(request.headers().size())
-    */
 
 class _TestSinaCrawler is UnitTest
   fun name(): String => "SinaCrawler"
