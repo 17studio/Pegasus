@@ -42,7 +42,7 @@ class _TestConfigFile is UnitTest
     Debug.out(json_doc.string())
     let request: Payload val = config.crawl_codes_to_file("/var/tmp/tmpconfig")
     let timers = Timers
-    let timer = Timer(_TestConfigFileTimerNotify(h.env, 5, timers), 0, 1_000_000_000) // wait: 0.1 secs, interval: 1 secs
+    let timer = Timer(_TestConfigFileTimerNotify(h.env, 5, timers), 0, 1_000_000_000) // wait: 0 secs, interval: 1 secs
     timers(consume timer)
 
 class _TestSinaCrawler is UnitTest

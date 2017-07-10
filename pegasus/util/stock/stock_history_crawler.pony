@@ -107,14 +107,16 @@ class StockHistoryCrawler
     """ 获取设定的批量股票信息，由多次_crawl_stock_data()调用的返回结果组成 """
     None
 
-  fun save_to_hdf5(data: JsonDoc) =>
+  fun save_to_hdf5(code: String, type: HistoryType, data: JsonDoc) =>
     None
 
-  fun _crawl_stock_data(code: String)
+  fun _crawl_stock_data(code: String) =>
     """ 在设定的范围内获取股票的数据，获取的条数可设定 """
+    None
 
-  fun _generate_crawl_list()
+  fun _generate_crawl_list() =>
     """ 生成抓取的stock list，格式[[], [], []...] """
+    None
 
 
 class _CrawlIntervalNotify is TimerNotify
