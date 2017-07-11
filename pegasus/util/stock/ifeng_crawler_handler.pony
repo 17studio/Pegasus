@@ -13,10 +13,18 @@
  *   DAY_PRICE_MIN_URL = '%sapi.finance.%s/akmin?scode=%s&type=%s'
  *   http://api.finance.ifeng.com/akmin?scode=sh000001&type=5
  *
- * 以上URL来源：tushare
+ * 以上URL来源：tushare -> get_hist_data
  */
 
-class HistoryCrawler
-  """
-  ?
-  """
+class IFengCrawlerHandler is CrawlerHandler
+  fun stock_http_api(): String =>
+    None
+
+  fun max_crawl_concurrency(): U32 =>
+    None
+
+  fun format_response_data(content: String): JsonDoc =>
+    None
+
+  fun hdf5_file_name(): String =>
+    None

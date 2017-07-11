@@ -104,5 +104,3 @@ class StockConfigure
     end
 
     JsonDoc
-
-

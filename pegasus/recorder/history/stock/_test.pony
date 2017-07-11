@@ -28,6 +28,7 @@ actor Main is TestList
     test(_TestHdf5file)
     test(_TestConfigFile)
 
+
 class _TestConfigFile is UnitTest
   fun name(): String => "StockConfigFile"
 
@@ -45,11 +46,13 @@ class _TestConfigFile is UnitTest
     let timer = Timer(_TestConfigFileTimerNotify(h.env, 5, timers), 0, 1_000_000_000) // wait: 0 secs, interval: 1 secs
     timers(consume timer)
 
-class _TestSinaCrawler is UnitTest
-  fun name(): String => "SinaCrawler"
+
+class _TestStockCrawler is UnitTest
+  fun name(): String => "StockCrawler"
 
   fun apply(h: TestHelper) =>
     None
+
 
 class _TestHdf5file is UnitTest
   fun name(): String => "Hdf5 file"
@@ -63,6 +66,7 @@ class _TestHdf5file is UnitTest
 
     var path2: FilePath = FilePath(h.env.root as AmbientAuth, "/var/tmp/tmphdf5_2")
     var hdf5_2: Hdf5file = Hdf5file.create2(path2)
+
 
 class _TestConfigFileTimerNotify is TimerNotify
   let _env: Env
