@@ -1,6 +1,8 @@
 bin
-build
 lib/*
+
+# cmake dir
+build
 
 # IDE
 .vscode

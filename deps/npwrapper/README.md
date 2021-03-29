@@ -1,4 +1,4 @@
-#npwrapper
+# npwrapper
 
 wrapper for numpy c api
 
