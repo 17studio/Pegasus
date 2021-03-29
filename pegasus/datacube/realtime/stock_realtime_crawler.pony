@@ -4,6 +4,9 @@ interface StockRealtimeCrawler
     https://github.com/shidenggui/easytrader
     https://github.com/shidenggui/easyquotation
 
+  假设数据初始化以后，获取的数据是截至到 T，服务器起来，此时为 T+1，那么就会产生一段时间的数据空白，
+  这段时间的数据空白是需要填补的，这是StockRealtimeCrawler的职责
+
   实时抓取应用的场景为定时获得市场数据，定时获得市场数据有助于实现以下功能：
     1. 保存数据到数据仓库，以便将来重用
     2. 提供实时数据功能，方便实现交易

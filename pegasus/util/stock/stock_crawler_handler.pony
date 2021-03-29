@@ -1,5 +1,5 @@
 
-interface CrawlerHandler
+interface StockCrawlerHandler
   fun stock_http_api(): String
     """ 返回远端的访问地址 """
 

@@ -16,7 +16,7 @@
  * 以上URL来源：tushare -> get_hist_data
  */
 
-class IFengCrawlerHandler is CrawlerHandler
+class IFengCrawlerHandler is StockCrawlerHandler
   fun stock_http_api(): String =>
     None
 
